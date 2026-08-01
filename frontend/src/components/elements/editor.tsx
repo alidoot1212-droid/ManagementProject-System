@@ -1,49 +1,26 @@
-import { useState } from 'react'
-
-import { EditorState, convertToRaw } from 'draft-js'
-import draftToHtml from 'draftjs-to-html'
-
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import type { EditorState } from 'draft-js'
 
 import ReactDraftWysiwyg from '@/@core/components/react-draft-wysiwyg'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { EditorWrapper } from '@/@core/styles/react-draft-wysiwyg'
 
 type Props = {
-  onChange: (value: string) => void
+  value: EditorState
+  onChange: (value: EditorState) => void
   disabled?: boolean
 }
 
-export default function EditorControlled({ onChange, disabled }: Props) {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty())
-
-  const handleChange = (state: EditorState) => {
-    setEditorState(state)
-
-    const html = draftToHtml(convertToRaw(state.getCurrentContent()))
-
-    onChange(html)
-  }
-
+const EditorControlled = ({ value, onChange, disabled }: Props) => {
   return (
-    <EditorWrapper
-      sx={{
-        direction: 'ltr',
-        '& .rdw-editor-toolbar': {
-          direction: 'ltr',
-          display: 'flex',
-          flexWrap: 'wrap'
-        },
-        '& .rdw-editor-main': {
-          minHeight: '500px'
-        }
-      }}
-    >
+    <EditorWrapper>
       <ReactDraftWysiwyg
-        editorState={editorState}
-        onEditorStateChange={handleChange}
+        editorState={value}
+        onEditorStateChange={onChange}
         readOnly={disabled}
-        placeholder='توضیحات خود را وارد کنید...'
+        placeholder='توضیحات مورد نظر را وارد کنید...'
       />
     </EditorWrapper>
   )
 }
+
+export default EditorControlled

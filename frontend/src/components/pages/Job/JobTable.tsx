@@ -103,15 +103,15 @@ export default function JobTable() {
           info: () => true,
 
           onShow: (row: any) => {
-            router.push(`/admin/enquiry/${row.id}/show`)
+            router.push(`/admin/job/${row.id}/show`)
           },
 
           onEdit: (row: any) => {
-            router.push(`/admin/enquiry/${row.id}/edit`)
+            router.push(`/admin/job/${row.id}/edit`)
           },
 
           onInfo: (row: any) => {
-            router.push(`/admin/enquiry/${row.id}/info`)
+            router.push(`/admin/job/${row.id}/info`)
           }
         }}
       />
