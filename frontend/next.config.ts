@@ -1,7 +1,21 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  // basePath: process.env.BASEPATH,
+  reactStrictMode: false,
+  eslint: {
+    ignoreDuringBuilds: true
+  },
 
-export default nextConfig;
+  redirects: async () => {
+    return [
+      {
+        source: '/',
+        destination: '/admin/dashboard',
+        permanent: true
+      }
+    ]
+  }
+}
+
+export default nextConfig
