@@ -1,6 +1,7 @@
 'use client'
 
 // MUI Imports
+
 import { useTheme } from '@mui/material/styles'
 
 // Third-party Imports
@@ -50,26 +51,22 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
 
   const navAdmin = [
     {
-      title: 'اطلاعات پایه',
-      icon: '/images/icons/menu/info.png',
+      title: 'لیست کار ها',
+      icon: '/images/icons/menu/application.png',
       children: [
         {
-          title: 'اعضای بازدید مدیریتی ایمنی بیمار',
-          path: '/admin/MembersOfThePatientSafetyManagementVisit'
-        },
-        {
-          title: 'سوالات بازدید مدیریتی ایمنی بیمار',
-          path: '/admin/QuestionsForThePatientSafetyManagementVisit'
+          title: 'بلوک کار',
+          path: '/admin/job'
         }
       ]
     },
     {
-      title: 'جلسات',
-      icon: '/images/icons/menu/education.png',
+      title: 'لیست وظایف',
+      icon: '/images/icons/menu/to-do-list.png',
       children: [
         {
-          title: 'فهرست جلسات',
-          path: '/admin/Meetings'
+          title: 'وظیفه',
+          path: '/admin/tasks'
         }
       ]
     }
