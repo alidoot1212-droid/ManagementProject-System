@@ -67,26 +67,26 @@ export default function TeamTable() {
           placeholderSearch: null
         }}
         dataStruct={{
-          title: ['نام', 'اعضا', 'سرتیم'],
-          name: [['name'], ['members'], ['leader']],
+          title: ['نام', 'سرتیم'],
+          name: [['name'], ['leader']],
           rowId: ['id'],
-          align: ['center', 'center', 'center'],
+          align: ['center', 'center'],
 
           //   width: ['40%', '20%', '10%'],
-          sort: ['avatar', 'members', 'leader'],
-          filter: [false, false, false],
+          sort: ['avatar', 'leader'],
+          filter: [false, false],
           customCol: [
             // نام تیم
             (_val: any, _index: number, row: any) => row.name ?? '-',
 
             // اعضا
-            (_val: any, _index: number, row: any) => (
-              <Stack direction='row' justifyContent='center' flexWrap='wrap' gap={1}>
-                {row.members?.map((member: any) => (
-                  <CustomChip key={member.id} label={`${member.name} (${member.responsibility})`} size='small' />
-                ))}
-              </Stack>
-            ),
+            // (_val: any, _index: number, row: any) => (
+            //   <Stack direction='row' justifyContent='center' flexWrap='wrap' gap={1}>
+            //     {row.members?.map((member: any) => (
+            //       <CustomChip key={member.id} label={`${member.name} (${member.responsibility})`} size='small' />
+            //     ))}
+            //   </Stack>
+            // ),
 
             // سرتیم
             (_val: any, _index: number, row: any) => {

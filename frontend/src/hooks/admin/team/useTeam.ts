@@ -25,14 +25,14 @@ export function useCreateTeam() {
 
 export const useGetTeamUpsertData = () => {
   return useQuery({
-    queryKey: ['member-upsert-data'],
+    queryKey: ['teams'],
     queryFn: getTeamUpsertData
   })
 }
 
 export const useShowTeam = (id: number | string, enabled = true) => {
   return useQuery({
-    queryKey: ['team', id],
+    queryKey: ['teams', id],
     queryFn: () => showTeam(id),
     enabled: enabled && !!id
   })

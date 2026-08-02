@@ -1,6 +1,10 @@
 'use client'
 
 // MUI Imports
+import { title } from 'process'
+
+import path from 'path'
+
 import { useTheme } from '@mui/material/styles'
 
 // Third-party Imports
@@ -21,8 +25,6 @@ import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNav
 // Style Imports
 import menuItemStyles from '@core/styles/vertical/menuItemStyles'
 import menuSectionStyles from '@core/styles/vertical/menuSectionStyles'
-import { title } from 'process'
-import path from 'path'
 
 type RenderExpandIconProps = {
   open?: boolean
@@ -62,12 +64,12 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
     //   ]
     // },
     {
-      title : 'تیم ها',
-      icon: '/images/icons/menu/developers.png',
-      children : [
+      title: 'تیم ها',
+      icon: '/images/icons/menu/management.png',
+      children: [
         {
-          title : 'فهرست',
-          path : '/admin/team'
+          title: 'فهرست',
+          path: '/admin/team'
         }
       ]
     }

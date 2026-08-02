@@ -225,24 +225,41 @@ const CreateTeam = ({ open, onClose }: Props) => {
                         gap: 1
                       }}
                     >
-                      {index === fields.length - 1 ? (
-                        <IconButton
-                          color='primary'
-                          onClick={() =>
-                            append({
-                              member_id: '',
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          gap: 1,
 
-                              responsibility_id: ''
-                            })
+                          '& .MuiIconButton-root': {
+                            width: 36,
+                            height: 36,
+                            border: theme => `1px solid ${theme.palette.divider}`,
+                            borderRadius: 2
                           }
-                        >
-                          <Icon icon='mdi:plus-circle-outline' />
-                        </IconButton>
-                      ) : (
-                        <IconButton color='error' onClick={() => remove(index)}>
+                        }}
+                      >
+                        {/* دکمه حذف */}
+                        <IconButton color='error' onClick={() => remove(index)} disabled={fields.length === 1}>
                           <Icon icon='mdi:delete-outline' />
                         </IconButton>
-                      )}
+
+                        {/* فقط در آخرین سطر دکمه اضافه نمایش داده شود */}
+                        {index === fields.length - 1 && (
+                          <IconButton
+                            color='primary'
+                            onClick={() =>
+                              append({
+                                member_id: '',
+                                responsibility_id: ''
+                              })
+                            }
+                          >
+                            <Icon icon='mdi:plus-circle-outline' />
+                          </IconButton>
+                        )}
+                      </Box>
                     </Box>
                   </Grid>
                 </Grid>

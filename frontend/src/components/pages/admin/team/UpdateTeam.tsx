@@ -243,10 +243,19 @@ export default function UpdateTeam({ open, onClose, data }: Props) {
                     <Box
                       sx={{
                         display: 'flex',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: 1,
+
+                        '& .MuiIconButton-root': {
+                          width: 36,
+                          height: 36,
+                          border: theme => `1px solid ${theme.palette.divider}`,
+                          borderRadius: 2
+                        }
                       }}
                     >
-                      {index === fields.length - 1 ? (
+                      {index === fields.length - 1 && (
                         <IconButton
                           color='primary'
                           onClick={() =>
@@ -258,11 +267,11 @@ export default function UpdateTeam({ open, onClose, data }: Props) {
                         >
                           <Icon icon='mdi:plus-circle-outline' />
                         </IconButton>
-                      ) : (
-                        <IconButton color='error' onClick={() => remove(index)}>
-                          <Icon icon='mdi:delete-outline' />
-                        </IconButton>
                       )}
+
+                      <IconButton color='error' onClick={() => remove(index)} disabled={fields.length === 1}>
+                        <Icon icon='mdi:delete-outline' />
+                      </IconButton>
                     </Box>
                   </Grid>
                 </Grid>
@@ -299,26 +308,22 @@ export default function UpdateTeam({ open, onClose, data }: Props) {
       <DialogActions>
         <Button
           variant='contained'
-          startIcon={<BiSave />}
           onClick={handleSubmit(onSubmit)}
           disabled={isPending}
           sx={{
-            width: 100
+            width: 100,
+            opacity: isPending ? 0.6 : 1
           }}
         >
-          {isPending ? (
-            <>
-              ذخیره
-              <CircularProgress
-                size={18}
-                sx={{
-                  color: 'inherit',
-                  ml: 1
-                }}
-              />
-            </>
-          ) : (
-            'ویرایش'
+          ویرایش
+          {isPending && (
+            <CircularProgress
+              size={18}
+              sx={{
+                color: 'inherit',
+                ml: 1
+              }}
+            />
           )}
         </Button>
       </DialogActions>
