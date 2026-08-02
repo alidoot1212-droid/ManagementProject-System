@@ -21,6 +21,8 @@ import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNav
 // Style Imports
 import menuItemStyles from '@core/styles/vertical/menuItemStyles'
 import menuSectionStyles from '@core/styles/vertical/menuSectionStyles'
+import { title } from 'process'
+import path from 'path'
 
 type RenderExpandIconProps = {
   open?: boolean
@@ -49,27 +51,23 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 
   const navAdmin = [
+    // {
+    //   title: 'جلسات',
+    //   icon: '/images/icons/menu/education.png',
+    //   children: [
+    //     {
+    //       title: 'فهرست جلسات',
+    //       path: '/admin/Meetings'
+    //     }
+    //   ]
+    // },
     {
-      title: 'اطلاعات پایه',
-      icon: '/images/icons/menu/info.png',
-      children: [
+      title : 'تیم ها',
+      icon: '/images/icons/menu/developers.png',
+      children : [
         {
-          title: 'اعضای بازدید مدیریتی ایمنی بیمار',
-          path: '/admin/MembersOfThePatientSafetyManagementVisit'
-        },
-        {
-          title: 'سوالات بازدید مدیریتی ایمنی بیمار',
-          path: '/admin/QuestionsForThePatientSafetyManagementVisit'
-        }
-      ]
-    },
-    {
-      title: 'جلسات',
-      icon: '/images/icons/menu/education.png',
-      children: [
-        {
-          title: 'فهرست جلسات',
-          path: '/admin/Meetings'
+          title : 'فهرست',
+          path : '/admin/team'
         }
       ]
     }
