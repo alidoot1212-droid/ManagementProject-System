@@ -2,7 +2,7 @@ import { api } from '@/libs/api'
 
 export const createJob = async (payload: any) => {
   try {
-    const res = await api.post('/job/store', payload)
+    const res = await api.post('/work-blocks/store', payload)
 
     return res.data
   } catch (error: any) {
@@ -12,7 +12,7 @@ export const createJob = async (payload: any) => {
 
 export const getJob = async (id: number) => {
   try {
-    const res = await api.get(`/job/show/${id}`)
+    const res = await api.get(`/work-blocks/show/${id}`)
 
     return res.data
   } catch (error: any) {
@@ -27,7 +27,7 @@ export const updateJob = async (
 ) => {
   const { id, ...payload } = data
 
-  const res = await api.post(`/job/update/${id}`, payload)
+  const res = await api.post(`/work-blocks/update/${id}`, payload)
 
   return res.data
 }

@@ -8,19 +8,6 @@ import { useGetJob } from '@/hooks/admin/job/useJob'
 import Breadcrumb from '@/components/Breadcrumb'
 
 export default function JobShow() {
-  //   const job = {
-  //     title: 'پیاده‌سازی فرم ایجاد Job',
-  //     start_time: '09:00',
-  //     end_time: '12:00',
-  //     team: {
-  //       name: 'Frontend'
-  //     },
-  //     status: {
-  //       title: 'در حال انجام'
-  //     },
-  //     description: '<p>این یک توضیح تست برای بلوک کار است.</p>'
-  //   }
-
   const { id } = useParams()
   const { data: job, isLoading } = useGetJob(Number(id))
 
@@ -51,7 +38,7 @@ export default function JobShow() {
             <Grid item md={12} xs={12}>
               <TextField
                 label='عنوان'
-                value={job.title}
+                value={job.name}
                 fullWidth
                 InputProps={{
                   readOnly: true

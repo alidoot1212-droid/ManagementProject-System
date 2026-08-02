@@ -42,7 +42,7 @@ export default function JobTable() {
 
     title: ['عنوان', 'زمان شروع', 'زمان پایان', 'وضعیت', 'وظایف'],
 
-    name: [['request_date'], ['start_time'], ['end_time'], ['status'], ['id']],
+    name: [['name'], ['start_time'], ['end_time'], ['status'], ['id']],
 
     customCol: [
       null,
@@ -60,7 +60,7 @@ export default function JobTable() {
       },
       (_value: any, _index: number, row: any) => (
         <Tooltip title='وظایف' arrow>
-          <IconButton color='info' onClick={() => router.push(`/admin/enquiry/${row.id}/info`)}>
+          <IconButton color='info' onClick={() => router.push(`/admin/work-blocks/${row.id}/info`)}>
             <InfoOutlinedIcon />
           </IconButton>
         </Tooltip>
@@ -71,9 +71,9 @@ export default function JobTable() {
 
     width: ['20%', '20%', '20%', '20%', '20%'],
 
-    sort: ['request_date', 'start_time', 'end_time', 'status', ''],
+    sort: ['name', 'start_time', 'end_time', 'status', ''],
 
-    filter: [{ key: 'request_date' }, { key: 'start_time' }, { key: 'end_time' }, { key: 'status' }, false]
+    filter: [{ key: 'name' }, { key: 'start_time' }, { key: 'end_time' }, { key: 'status' }, false]
   }
 
   return (
@@ -89,8 +89,8 @@ export default function JobTable() {
         cardHeader={{
           status: true
         }}
-        queryKey='enquiry'
-        baseUrl='/request-area'
+        queryKey='work-blocks'
+        baseUrl='/work-blocks/'
         textBtn='ایجاد کار جدید'
         btnShow={true}
         dataStruct={dataStruct}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 import { Chip, IconButton, Tooltip } from '@mui/material'
 
@@ -8,9 +8,13 @@ import { BiTask } from 'react-icons/bi'
 
 import Breadcrumb from '@/components/Breadcrumb'
 import CustomTable from '@/components/CustomTable'
+import TimeModal from '../Modals/TimeModal'
+import AskingModal from '../Modals/AskingModal'
 
 export default function TaskTable() {
-  const router = useRouter()
+  const [selectedRow, setSelectedRow] = useState<any>(null)
+  const [openTimeModal, setOpenTimeModal] = useState(false)
+  const [openAskingModal, setOpenAskingModal] = useState(false)
 
   const statusConfig: Record<string, { label: string; color: any }> = {
     active: {
@@ -40,14 +44,15 @@ export default function TaskTable() {
   const dataStruct = {
     rowId: ['id'],
 
-    title: ['عنوان', 'زمان شروع', 'زمان پایان', 'وضعیت', 'وظایف'],
+    title: ['عنوان', 'وزن', 'ارزش', 'وضعیت', 'اطلاعات بیشتر', 'تحویل'],
 
-    name: [['request_date'], ['start_time'], ['end_time'], ['status'], ['id']],
+    name: [['name'], ['weight'], ['value'], ['status'], ['id'], ['id']],
 
     customCol: [
       null,
       null,
       null,
+
       (value: any[]) => {
         const status = value[0]
 
@@ -58,22 +63,43 @@ export default function TaskTable() {
 
         return <Chip label={config.label} color={config.color} size='small' />
       },
+
       (_value: any, _index: number, row: any) => (
-        <Tooltip title='وظایف' arrow>
-          <IconButton color='info' onClick={() => router.push(`/admin/enquiry/${row.id}/info`)}>
+        <Tooltip title='اطلاعات بیشتر' arrow>
+          <IconButton
+            color='info'
+            onClick={() => {
+              setSelectedRow(row)
+              setOpenTimeModal(true)
+            }}
+          >
+            <BiTask />
+          </IconButton>
+        </Tooltip>
+      ),
+
+      (_value: any, _index: number, row: any) => (
+        <Tooltip title='تحویل' arrow>
+          <IconButton
+            color='success'
+            onClick={() => {
+              setSelectedRow(row)
+              setOpenAskingModal(true)
+            }}
+          >
             <BiTask />
           </IconButton>
         </Tooltip>
       )
     ],
 
-    align: ['center', 'center', 'center', 'center', 'center'],
+    align: ['center', 'center', 'center', 'center', 'center', 'center'],
 
-    width: ['20%', '20%', '20%', '20%', '20%'],
+    width: ['20%', '20%', '20%', '20%', '10%', '10%'],
 
-    sort: ['request_date', 'start_time', 'end_time', 'status', ''],
+    sort: ['name', 'weight', 'value', 'status', '', ''],
 
-    filter: [{ key: 'request_date' }, { key: 'start_time' }, { key: 'end_time' }, { key: 'status' }, false]
+    filter: [{ key: 'name' }, { key: 'weight' }, { key: 'value' }, { key: 'status' }, false, false]
   }
 
   return (
@@ -98,21 +124,18 @@ export default function TaskTable() {
           status: () => true,
           delete: () => true,
           edit: () => true,
-          show: () => true,
+          show: () => true
+        }}
+      />
 
-          info: () => true,
+      <TimeModal open={openTimeModal} onClose={() => setOpenTimeModal(false)} />
 
-          onShow: (row: any) => {
-            router.push(`/admin/tasks/${row.id}/show`)
-          },
-
-          onEdit: (row: any) => {
-            router.push(`/admin/tasks/${row.id}/edit`)
-          },
-
-          onInfo: (row: any) => {
-            router.push(`/admin/tasks/${row.id}/info`)
-          }
+      <AskingModal
+        open={openAskingModal}
+        onClose={() => setOpenAskingModal(false)}
+        onSubmit={() => {
+          console.log(selectedRow)
+          setOpenAskingModal(false)
         }}
       />
     </>

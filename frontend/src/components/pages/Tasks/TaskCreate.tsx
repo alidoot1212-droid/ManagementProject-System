@@ -16,14 +16,15 @@ import {
   Typography
 } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
-import { EditorState } from 'draft-js'
+import { convertToRaw, EditorState } from 'draft-js'
 
 import EditorControlled from '@/components/elements/editor'
 import Breadcrumb from '@/components/Breadcrumb'
+import { useCreateTask } from '@/hooks/admin/tasks/useTasks'
 
 type FormValues = {
-  block_id: number | null
-  title: string
+  work_block_id: number | null
+  name: string
   weight: number
   value: number
   priority_id: number | null
@@ -79,8 +80,8 @@ export default function TaskCreate() {
     formState: { errors }
   } = useForm<FormValues>({
     defaultValues: {
-      block_id: null,
-      title: '',
+      work_block_id: null,
+      name: '',
       weight: 1,
       value: 1,
       priority_id: null,
@@ -90,15 +91,23 @@ export default function TaskCreate() {
   })
 
   const router = useRouter()
+  const { mutateAsync, isPending } = useCreateTask()
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data)
+  const onSubmit = async (data: FormValues) => {
+    const payload = {
+      ...data,
+      description: JSON.stringify(convertToRaw(data.description.getCurrentContent()))
+    }
+
+    await mutateAsync(payload)
+
+    router.push('/admin/tasks')
   }
 
   const items = [
     { title: 'داشبورد', to: '/admin' },
-    { title: 'لیست کار ها', to: '/admin/tasks' },
-    { title: 'ایجاد کار جدید' }
+    { title: 'لیست وظایف', to: '/admin/tasks' },
+    { title: 'ایجاد وظیفه جدید' }
   ]
 
   return (
@@ -120,7 +129,7 @@ export default function TaskCreate() {
             <Grid container spacing={6}>
               <Grid item md={12} xs={12}>
                 <Controller
-                  name='title'
+                  name='name'
                   control={control}
                   rules={{ required: 'عنوان الزامی است' }}
                   render={({ field }) => (
@@ -128,8 +137,8 @@ export default function TaskCreate() {
                       {...field}
                       label='عنوان'
                       fullWidth
-                      error={!!errors.title}
-                      helperText={errors.title?.message}
+                      error={!!errors.name}
+                      helperText={errors.name?.message}
                     />
                   )}
                 />
@@ -137,11 +146,19 @@ export default function TaskCreate() {
 
               <Grid item md={6} xs={12}>
                 <Controller
-                  name='block_id'
+                  name='work_block_id'
                   control={control}
                   rules={{ required: 'انتخاب بلوک کار الزامی است' }}
                   render={({ field }) => (
-                    <TextField {...field} select label='بلوک کار' fullWidth value={field.value ?? ''}>
+                    <TextField
+                      {...field}
+                      select
+                      label='بلوک کار'
+                      fullWidth
+                      value={field.value ?? ''}
+                      error={!!errors.work_block_id}
+                      helperText={errors.work_block_id?.message}
+                    >
                       {blocks.map(block => (
                         <MenuItem key={block.id} value={block.id}>
                           {block.title}
@@ -200,7 +217,15 @@ export default function TaskCreate() {
                   control={control}
                   rules={{ required: 'انتخاب اولویت الزامی است' }}
                   render={({ field }) => (
-                    <TextField {...field} select label='اولویت' fullWidth value={field.value ?? ''}>
+                    <TextField
+                      {...field}
+                      select
+                      label='اولویت'
+                      fullWidth
+                      error={!!errors.priority_id}
+                      helperText={errors.priority_id?.message}
+                      value={field.value ?? ''}
+                    >
                       {priorities.map(priority => (
                         <MenuItem key={priority.id} value={priority.id}>
                           {priority.title}
@@ -239,7 +264,7 @@ export default function TaskCreate() {
                 <Link component='button' underline='hover' onClick={() => router.back()} color='error'>
                   بازگشت
                 </Link>
-                <Button type='submit' variant='contained' color='success'>
+                <Button type='submit' variant='contained' color='success' disabled={isPending}>
                   ثبت
                 </Button>
               </Grid>

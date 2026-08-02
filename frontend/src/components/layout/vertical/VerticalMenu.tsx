@@ -59,16 +59,6 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
           path: '/admin/job'
         }
       ]
-    },
-    {
-      title: 'لیست وظایف',
-      icon: '/images/icons/menu/to-do-list.png',
-      children: [
-        {
-          title: 'وظیفه',
-          path: '/admin/tasks'
-        }
-      ]
     }
   ]
 

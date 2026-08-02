@@ -12,61 +12,31 @@ import { MobileTimePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { faIR } from '@mui/x-date-pickers/locales'
-import { EditorState, convertToRaw } from 'draft-js'
+import { EditorState } from 'draft-js'
 
 import EditorControlled from '@/components/elements/editor'
 import { useCreateJob } from '@/hooks/admin/job/useJob'
 import Breadcrumb from '@/components/Breadcrumb'
 
 type FormValues = {
-  title: string
-  start_time: Dayjs | null
-  end_time: Dayjs | null
+  name: string
+  start_date: Dayjs | null
+  end_date: Dayjs | null
   team_id: number | null
   status_id: number | null
   description: EditorState
 }
 
 export default function JobCreate() {
-  const teams = [
-    {
-      id: 1,
-      name: 'Frontend'
-    },
-    {
-      id: 2,
-      name: 'Backend'
-    },
-    {
-      id: 3,
-      name: 'Mobile'
-    }
-  ]
-
-  const statuses = [
-    {
-      id: 1,
-      title: 'در انتظار'
-    },
-    {
-      id: 2,
-      title: 'در حال انجام'
-    },
-    {
-      id: 3,
-      title: 'تکمیل شده'
-    }
-  ]
-
   const {
     control,
     handleSubmit,
     formState: { errors }
   } = useForm<FormValues>({
     defaultValues: {
-      title: '',
-      start_time: null,
-      end_time: null,
+      name: '',
+      start_date: null,
+      end_date: null,
       team_id: null,
       status_id: null,
       description: EditorState.createEmpty()
@@ -79,9 +49,9 @@ export default function JobCreate() {
   const onSubmit = async (data: FormValues) => {
     const payload = {
       ...data,
-      start_time: data.start_time?.format('HH:mm'),
-      end_time: data.end_time?.format('HH:mm'),
-      description: JSON.stringify(convertToRaw(data.description.getCurrentContent()))
+      start_time: data.start_date?.format('HH:mm'),
+      end_time: data.end_date?.format('HH:mm'),
+      description: data.description.getCurrentContent().getPlainText()
     }
 
     await mutateAsync(payload)
@@ -122,7 +92,7 @@ export default function JobCreate() {
               <Grid container spacing={6}>
                 <Grid item md={12} xs={12}>
                   <Controller
-                    name='title'
+                    name='name'
                     control={control}
                     rules={{ required: 'عنوان الزامی است' }}
                     render={({ field }) => (
@@ -130,8 +100,8 @@ export default function JobCreate() {
                         {...field}
                         label='عنوان'
                         fullWidth
-                        error={!!errors.title}
-                        helperText={errors.title?.message}
+                        error={!!errors.name}
+                        helperText={errors.name?.message}
                       />
                     )}
                   />
@@ -139,7 +109,7 @@ export default function JobCreate() {
 
                 <Grid item md={6} xs={12}>
                   <Controller
-                    name='start_time'
+                    name='start_date'
                     control={control}
                     rules={{ required: 'زمان شروع الزامی است' }}
                     render={({ field }) => (
@@ -167,7 +137,7 @@ export default function JobCreate() {
 
                 <Grid item md={6} xs={12}>
                   <Controller
-                    name='end_time'
+                    name='end_date'
                     control={control}
                     rules={{ required: 'زمان پایان الزامی است' }}
                     render={({ field }) => (
@@ -199,7 +169,15 @@ export default function JobCreate() {
                     control={control}
                     rules={{ required: 'انتخاب تیم الزامی است' }}
                     render={({ field }) => (
-                      <TextField {...field} select label='تیم' fullWidth value={field.value ?? ''}>
+                      <TextField
+                        {...field}
+                        select
+                        label='تیم'
+                        fullWidth
+                        error={!!errors.team_id}
+                        helperText={errors.team_id?.message}
+                        value={field.value ?? ''}
+                      >
                         {teams.map(team => (
                           <MenuItem key={team.id} value={team.id}>
                             {team.name}

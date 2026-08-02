@@ -22,7 +22,7 @@ import { useGetJob, useUpdateJob } from '@/hooks/admin/job/useJob'
 import Breadcrumb from '@/components/Breadcrumb'
 
 type FormValues = {
-  title: string
+  name: string
   start_time: Dayjs | null
   end_time: Dayjs | null
   team_id: number | null
@@ -68,7 +68,7 @@ export default function JobEdit() {
     formState: { errors }
   } = useForm<FormValues>({
     defaultValues: {
-      title: '',
+      name: '',
       start_time: null,
       end_time: null,
       team_id: null,
@@ -89,7 +89,7 @@ export default function JobEdit() {
     if (!job) return
 
     reset({
-      title: job.title,
+      name: job.name,
       start_time: dayjs(job.start_time),
       end_time: dayjs(job.end_time),
       team_id: job.team_id,
@@ -151,7 +151,7 @@ export default function JobEdit() {
               <Grid container spacing={6}>
                 <Grid item md={12} xs={12}>
                   <Controller
-                    name='title'
+                    name='name'
                     control={control}
                     rules={{ required: 'عنوان الزامی است' }}
                     render={({ field }) => (
@@ -159,8 +159,8 @@ export default function JobEdit() {
                         {...field}
                         label='عنوان'
                         fullWidth
-                        error={!!errors.title}
-                        helperText={errors.title?.message}
+                        error={!!errors.name}
+                        helperText={errors.name?.message}
                       />
                     )}
                   />

@@ -11,7 +11,7 @@ export function useCreateJob() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['job']
+        queryKey: ['work-blocks']
       })
 
       toast.success('بلوک کار با موفقیت ایجاد شد')
@@ -30,7 +30,7 @@ export function useCreateJob() {
 
 export function useGetJob(id: number) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['job', id],
+    queryKey: ['work-blocks', id],
     queryFn: () => getJob(id),
     enabled: !!id
   })
@@ -50,7 +50,7 @@ export function useUpdateJob() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['job']
+        queryKey: ['work-blocks']
       })
 
       toast.success('بلوک کار با موفقیت ویرایش شد')
