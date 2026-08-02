@@ -9,16 +9,16 @@ class WorkBlock extends Model
     protected $fillable = [
         'team_id',
         'name',
-        'start_date',
-        'end_date',
+        'start_time',
+        'end_time',
         'status_id',
         'description',
     ];
-    protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
-    ];
 
+    protected $casts = [
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
+    ];
 
     public function team()
     {

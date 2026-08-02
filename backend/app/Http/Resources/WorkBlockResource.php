@@ -23,10 +23,15 @@ class WorkBlockResource extends JsonResource
             'name' => $this->name,
 
             // زمان شروع
-            'start_date' => Jalalian::fromCarbon($this->start_date)->format('Y/m/d'),
+            'start_time' => $this->start_time
+                ? substr($this->start_time, 0, 5)
+                : null,
 
             // زمان پایان
-            'end_date' => Jalalian::fromCarbon($this->end_date)->format('Y/m/d'),
+            'end_time' => $this->end_time
+                ? substr($this->end_time, 0, 5)
+                : null,
+
 
             // کد وضعیت
             'status' => [
