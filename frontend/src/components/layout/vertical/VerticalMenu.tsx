@@ -1,6 +1,10 @@
 'use client'
 
 // MUI Imports
+import { title } from 'process'
+
+import path from 'path'
+
 import { useTheme } from '@mui/material/styles'
 
 // Third-party Imports
@@ -49,27 +53,23 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 
   const navAdmin = [
+    // {
+    //   title: 'جلسات',
+    //   icon: '/images/icons/menu/education.png',
+    //   children: [
+    //     {
+    //       title: 'فهرست جلسات',
+    //       path: '/admin/Meetings'
+    //     }
+    //   ]
+    // },
     {
-      title: 'اطلاعات پایه',
-      icon: '/images/icons/menu/info.png',
+      title: 'تیم ها',
+      icon: '/images/icons/menu/management.png',
       children: [
         {
-          title: 'اعضای بازدید مدیریتی ایمنی بیمار',
-          path: '/admin/MembersOfThePatientSafetyManagementVisit'
-        },
-        {
-          title: 'سوالات بازدید مدیریتی ایمنی بیمار',
-          path: '/admin/QuestionsForThePatientSafetyManagementVisit'
-        }
-      ]
-    },
-    {
-      title: 'جلسات',
-      icon: '/images/icons/menu/education.png',
-      children: [
-        {
-          title: 'فهرست جلسات',
-          path: '/admin/Meetings'
+          title: 'فهرست',
+          path: '/admin/team'
         }
       ]
     }

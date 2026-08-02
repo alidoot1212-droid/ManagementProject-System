@@ -91,7 +91,7 @@ const UserDropdown = () => {
           </Typography>
 
           <Typography variant='caption' fontSize={10} color='text.secondary' lineHeight={1.2}>
-            حمیده بهشتی فر
+            test
           </Typography>
         </Box>
       </Box>

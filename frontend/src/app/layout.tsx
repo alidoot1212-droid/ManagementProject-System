@@ -22,7 +22,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
 
 export const metadata = {
-  title: 'سامانه تستی'
+  title: 'مدیریت پروژه'
 }
 
 const RootLayout = async (props: ChildrenType) => {
