@@ -22,4 +22,8 @@ class TeamMember extends Model
             'team_id'
         );
     }
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }
