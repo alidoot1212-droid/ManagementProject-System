@@ -49,4 +49,6 @@ Route::prefix('tasks')->controller(TaskController::class)->group(function () {
 
     // مدیریت تگ‌های وظیفه
     Route::post('/sync-tags/{task}', 'syncTags');
+    
+    Route::get('/user/{user}/tasks', 'userTasks');
 });

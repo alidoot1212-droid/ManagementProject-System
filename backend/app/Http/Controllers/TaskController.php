@@ -25,6 +25,22 @@ class TaskController extends Controller
         return TaskResource::collection($tasks);
     }
 
+    public function userTasks(int $userId)
+    {
+        $tasks = Task::with([
+            'workBlock',
+            'priority',
+            'status',
+            'user',
+            'tags',
+        ])
+            ->where('user_id', $userId)
+            ->latest()
+            ->get();
+
+        return TaskResource::collection($tasks);
+    }
+
 
     // ایجاد وظیفه
     public function store(TaskRequest $request)
