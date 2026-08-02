@@ -36,25 +36,26 @@ class TeamController extends Controller
             'leader_id' => $validated['leader_id'] ?? null,
         ]);
 
-        // member_ids از فرانت به صورت آرایه می‌آید
-        $memberIds = $validated['member_ids'] ?? [];
+        $syncData = [];
 
-        // اگر سرگروه انتخاب شده، حتماً عضو تیم هم باشد
-        if (!empty($validated['leader_id'])) {
-            $memberIds[] = $validated['leader_id'];
+        foreach ($validated['members'] ?? [] as $member) {
+            $syncData[$member['member_id']] = [
+                'responsibility_id' => $member['responsibility_id'],
+            ];
         }
 
-        // حذف IDهای تکراری و ثبت تمام اعضا
-        $team->members()->sync(
-            array_values(array_unique($memberIds))
-        );
+        // ذخیره تمام اعضا در جدول واسط
+        if (!empty($syncData)) {
+            $team->members()->sync($syncData);
+        }
 
-        return new TeamResource(
-            $team->load([
-                'members',
-                'leader',
-            ])
-        );
+        // دوباره از دیتابیس اعضا و سرگروه را بخوان
+        $team->load([
+            'members',
+            'leader',
+        ]);
+
+        return new TeamResource($team);
     }
 
     /**
@@ -82,25 +83,23 @@ class TeamController extends Controller
             'leader_id' => $validated['leader_id'] ?? null,
         ]);
 
-        // member_ids آرایه‌ای است
-        $memberIds = $validated['member_ids'] ?? [];
+        $syncData = [];
 
-        // سرگروه هم باید عضو تیم باشد
-        if (!empty($validated['leader_id'])) {
-            $memberIds[] = $validated['leader_id'];
+        foreach ($validated['members'] ?? [] as $member) {
+            $syncData[$member['member_id']] = [
+                'responsibility_id' => $member['responsibility_id'],
+            ];
         }
 
-        // اعضای قبلی را با لیست جدید جایگزین می‌کند
-        $team->members()->sync(
-            array_values(array_unique($memberIds))
-        );
+        // اعضای قبلی با اعضای جدید جایگزین می‌شوند
+        $team->members()->sync($syncData);
 
-        return new TeamResource(
-            $team->load([
-                'members',
-                'leader',
-            ])
-        );
+        $team->load([
+            'members',
+            'leader',
+        ]);
+
+        return new TeamResource($team);
     }
 
     /**
@@ -119,7 +118,7 @@ class TeamController extends Controller
     }
 
     /**
-     * اطلاعات مورد نیاز فرم ایجاد / ویرایش
+     * اطلاعات مورد نیاز فرم ایجاد / ویرایش تیم
      */
     public function upsertData()
     {

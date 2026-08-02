@@ -18,12 +18,15 @@ class Team extends Model
             'team_member',
             'team_id',
             'team_member_id'
-        );
+        )->withPivot('responsibility_id');
     }
 
     public function leader()
     {
-        return $this->belongsTo(TeamMember::class, 'leader_id');
+        return $this->belongsTo(
+            TeamMember::class,
+            'leader_id'
+        );
     }
 
     public function meetings()

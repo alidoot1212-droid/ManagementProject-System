@@ -5,19 +5,44 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-
 class TeamResource extends JsonResource
 {
-
-    public function rules(): array
+    public function toArray(Request $request): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:teams,code,' . $this->team,
-            'room_id' => 'nullable|exists:rooms,id',
-            'member_ids' => 'nullable|array',
-            'member_ids.*' => 'exists:team_members,id',
-            'leader_id' => 'nullable|exists:team_members,id',
+            'id' => $this->id,
+            'name' => $this->name,
+            'leader_id' => $this->leader_id,
+
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+
+            'members' => $this->whenLoaded('members', function () {
+                return $this->members->map(function ($member) {
+                    return [
+                        'id' => $member->id,
+                        'name' => $member->name,
+                        'mobile' => $member->mobile,
+                        'responsibility' => $member->responsibility,
+
+                        'responsibility_id' =>
+                        $member->pivot->responsibility_id ?? null,
+                    ];
+                });
+            }),
+
+            'leader' => $this->whenLoaded('leader', function () {
+                if (!$this->leader) {
+                    return null;
+                }
+
+                return [
+                    'id' => $this->leader->id,
+                    'name' => $this->leader->name,
+                    'mobile' => $this->leader->mobile,
+                    'responsibility' => $this->leader->responsibility,
+                ];
+            }),
         ];
     }
 }

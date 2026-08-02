@@ -14,10 +14,32 @@ class TeamRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'member_ids' => 'nullable|array',
-            'member_ids.*' => 'exists:team_members,id',
-            'leader_id' => 'nullable|exists:team_members,id',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'leader_id' => [
+                'required',
+                'exists:team_members,id',
+            ],
+
+            'members' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'members.*.member_id' => [
+                'required',
+                'exists:team_members,id',
+            ],
+
+            'members.*.responsibility_id' => [
+                'required',
+                'integer',
+            ],
         ];
     }
 }

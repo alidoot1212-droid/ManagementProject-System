@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            // $table->foreignId('room_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('leader_id')->nullable();
             $table->timestamps();
         });
