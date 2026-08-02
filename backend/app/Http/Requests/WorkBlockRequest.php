@@ -57,8 +57,8 @@ class WorkBlockRequest extends FormRequest
         return [
             'team_id' => 'sometimes|exists:teams,id',
             'name' => 'sometimes|string',
-            'start_date' => 'sometimes|date',
-            'end_date' => 'sometimes|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
             'status_id' => 'sometimes|exists:statuses,id',
             'description' => 'nullable|string',
         ];
