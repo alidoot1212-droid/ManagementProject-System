@@ -1,50 +1,65 @@
+import 'package:project_management/model/priority_model.dart';
+import 'package:project_management/model/status_model.dart';
+import 'package:project_management/model/tag_model.dart';
+import 'package:project_management/model/team_member_model.dart';
+
 class TaskModel {
   final int id;
-
-  final String blockCode;
+  final int workBlockId;
 
   final String name;
 
   final int weight;
-
   final int value;
 
-  final int teamMemberId;
+  final String? description;
 
-  final int duration;
+  final PriorityModel priority;
 
-  final String assignment;
+  final StatusModel status;
 
-  final DateTime startDate;
+  final TeamMemberModel teamMember;
 
-  final DateTime dueDate;
+  final String assignedAt;
 
-  final DateTime? deliveryTime;
+  final String dueDate;
 
-  final bool isDone;
+  final String? completedAt;
+
+  final List<TagModel> tags;
+
+  final String createdAt;
+
+  final String updatedAt;
 
   TaskModel({
     required this.id,
-    required this.blockCode,
+    required this.workBlockId,
     required this.name,
     required this.weight,
     required this.value,
-    required this.teamMemberId,
-    required this.duration,
-    required this.assignment,
-    required this.startDate,
+    this.description,
+
+    required this.priority,
+    required this.status,
+    required this.teamMember,
+
+    required this.assignedAt,
     required this.dueDate,
 
-    this.deliveryTime,
+    this.completedAt,
 
-    this.isDone = false,
+    required this.tags,
+
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
     return TaskModel(
       id: json['id'],
 
-      blockCode: json['block_code'],
+      workBlockId: json['work_block']['id'],
 
       name: json['name'],
 
@@ -52,73 +67,27 @@ class TaskModel {
 
       value: json['value'],
 
-      teamMemberId: json['team_member_id'],
+      description: json['description'],
 
-      duration: json['duration'],
+      priority: PriorityModel.fromJson(json['priority']),
 
-      assignment: json['assignment'],
+      status: StatusModel.fromJson(json['status']),
 
-      startDate: DateTime.parse(json['start_date']),
+      teamMember: TeamMemberModel.fromJson(json['team_member']),
 
-      dueDate: DateTime.parse(json['due_date']),
+      assignedAt: json['assigned_at'],
 
-      deliveryTime: json['delivery_time'] != null
-          ? DateTime.parse(json['delivery_time'])
-          : null,
+      dueDate: json['due_date'],
 
-      isDone: json['is_done'] ?? false,
-    );
-  }
+      completedAt: json['completed_at'],
 
-  TaskModel copyWith({
-    int? id,
+      tags: json['tags'] != null
+          ? List<TagModel>.from(json['tags'].map((x) => TagModel.fromJson(x)))
+          : [],
 
-    String? blockCode,
+      createdAt: json['created_at'],
 
-    String? name,
-
-    int? weight,
-
-    int? value,
-
-    int? teamMemberId,
-
-    int? duration,
-
-    String? assignment,
-
-    DateTime? startDate,
-
-    DateTime? dueDate,
-
-    DateTime? deliveryTime,
-
-    bool? isDone,
-  }) {
-    return TaskModel(
-      id: id ?? this.id,
-
-      blockCode: blockCode ?? this.blockCode,
-
-      name: name ?? this.name,
-
-      weight: weight ?? this.name.length,
-
-      value: value ?? this.value,
-
-      teamMemberId: teamMemberId ?? this.teamMemberId,
-
-      duration: duration ?? this.duration,
-
-      assignment: assignment ?? this.assignment,
-
-      startDate: startDate ?? this.startDate,
-
-      dueDate: dueDate ?? this.dueDate,
-
-      deliveryTime: deliveryTime ?? this.deliveryTime,
-
-      isDone: isDone ?? this.isDone,
+      updatedAt: json['updated_at'],
     );
   }
 }

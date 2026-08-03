@@ -4,8 +4,15 @@ import 'package:project_management/widgets/task_sheet.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
 class CalendarGrid extends StatefulWidget {
-  const CalendarGrid({super.key});
+  final List<TaskModel> tasks;
 
+  final Function(TaskModel) onTaskUpdated;
+
+  const CalendarGrid({
+    super.key,
+    required this.tasks,
+    required this.onTaskUpdated,
+  });
   @override
   State<CalendarGrid> createState() => _CalendarGridState();
 }
@@ -14,34 +21,6 @@ class _CalendarGridState extends State<CalendarGrid> {
   Jalali currentMonth = Jalali.now();
 
   int? selectedDay;
-
-  final List<TaskModel> tasks = [
-    TaskModel(
-      id: 1,
-      blockCode: "UI-001",
-      name: "طراحی صفحه تقویم",
-      weight: 20,
-      value: 80,
-      teamMemberId: 1,
-      duration: 3,
-      assignment: "Frontend",
-      startDate: DateTime(2026, 8, 1),
-      dueDate: DateTime(2026, 8, 5),
-    ),
-
-    TaskModel(
-      id: 2,
-      blockCode: "API-001",
-      name: "اتصال API",
-      weight: 30,
-      value: 90,
-      teamMemberId: 2,
-      duration: 5,
-      assignment: "Backend",
-      startDate: DateTime(2026, 8, 5),
-      dueDate: DateTime(2026, 8, 10),
-    ),
-  ];
 
   final List<String> monthNames = [
     "فروردین",
@@ -248,8 +227,8 @@ class _CalendarGridState extends State<CalendarGrid> {
           today.month == currentMonth.month &&
           today.day == day;
 
-      final hasTask = tasks.any((task) {
-        final taskDate = Jalali.fromDateTime(task.startDate);
+      final hasTask = widget.tasks.any((task) {
+        final taskDate = parseJalaliDate(task.dueDate);
 
         return taskDate.year == currentMonth.year &&
             taskDate.month == currentMonth.month &&
@@ -273,8 +252,8 @@ class _CalendarGridState extends State<CalendarGrid> {
               day,
             );
 
-            final selectedTasks = tasks.where((task) {
-              final date = Jalali.fromDateTime(task.startDate);
+            final selectedTasks = widget.tasks.where((task) {
+              final date = parseJalaliDate(task.dueDate);
 
               return date.year == selectedDate.year &&
                   date.month == selectedDate.month &&
@@ -293,6 +272,8 @@ class _CalendarGridState extends State<CalendarGrid> {
                   date: selectedDate,
 
                   tasks: selectedTasks,
+
+                  onTaskUpdated: widget.onTaskUpdated,
                 );
               },
             );
@@ -378,16 +359,14 @@ class _CalendarGridState extends State<CalendarGrid> {
                     bottom: 8,
 
                     child: Container(
-                      width: 7,
+                      width: 8,
 
-                      height: 7,
+                      height: 8,
 
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
 
-                        gradient: LinearGradient(
-                          colors: [Color(0xff7C3AED), Color(0xffC084FC)],
-                        ),
+                        color: getTaskDotColor(day),
                       ),
                     ),
                   ),
@@ -409,5 +388,39 @@ class _CalendarGridState extends State<CalendarGrid> {
 
       children: items,
     );
+  }
+
+  Jalali parseJalaliDate(String date) {
+    final datePart = date.split(" ")[0];
+
+    final parts = datePart.split("/");
+
+    return Jalali(
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
+  }
+
+  Color getTaskDotColor(int day) {
+    final dayTasks = widget.tasks.where((task) {
+      final taskDate = parseJalaliDate(task.dueDate);
+
+      return taskDate.year == currentMonth.year &&
+          taskDate.month == currentMonth.month &&
+          taskDate.day == day;
+    }).toList();
+
+    if (dayTasks.isEmpty) {
+      return Colors.transparent;
+    }
+
+    final allDone = dayTasks.every((task) => task.status.id == 4);
+
+    if (allDone) {
+      return Colors.green;
+    }
+
+    return const Color(0xff8B5CF6);
   }
 }

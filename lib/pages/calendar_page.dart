@@ -1,8 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:project_management/model/task_model.dart';
+import 'package:project_management/services/task_repository.dart';
+import 'package:project_management/services/task_service.dart';
 import '../widgets/calendar_grid.dart';
 
-class CalendarPage extends StatelessWidget {
+class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
+
+  @override
+  State<CalendarPage> createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage> {
+  late TaskRepository repository;
+
+  List<TaskModel> tasks = [];
+
+  bool loading = true;
+  @override
+  void initState() {
+    super.initState();
+
+    repository = TaskRepository(service: TaskService());
+
+    loadTasks();
+  }
+
+  void updateTask(TaskModel updatedTask) {
+    setState(() {
+      final index = tasks.indexWhere((task) => task.id == updatedTask.id);
+
+      if (index != -1) {
+        tasks[index] = updatedTask;
+      }
+    });
+  }
+
+  Future<void> loadTasks() async {
+    final result = await repository.getTasksByUser(1);
+
+    print("TASK COUNT => ${result.length}");
+
+    for (var task in result) {
+      print("${task.name} ---- ${task.dueDate}");
+    }
+
+    setState(() {
+      tasks = result;
+
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -207,7 +255,7 @@ class CalendarPage extends StatelessWidget {
                   ],
                 ),
 
-                child: const CalendarGrid(),
+                child: CalendarGrid(tasks: tasks, onTaskUpdated: updateTask),
               ),
             ],
           ),

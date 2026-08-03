@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:project_management/model/task_model.dart';
+import 'package:project_management/services/task_repository.dart';
+import 'package:project_management/services/task_service.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
 class TaskBottomSheet extends StatefulWidget {
   final Jalali date;
   final List<TaskModel> tasks;
+  final Function(TaskModel) onTaskUpdated;
 
-  const TaskBottomSheet({super.key, required this.date, required this.tasks});
+  const TaskBottomSheet({
+    super.key,
+    required this.date,
+    required this.tasks,
+    required this.onTaskUpdated,
+  });
 
   @override
   State<TaskBottomSheet> createState() => _TaskBottomSheetState();
 }
 
 class _TaskBottomSheetState extends State<TaskBottomSheet> {
+  final repository = TaskRepository(service: TaskService());
   late List<TaskModel> selectedTasks;
 
   @override
@@ -20,20 +29,12 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
     super.initState();
 
     selectedTasks = widget.tasks.where((task) {
-      final taskDate = Jalali.fromDateTime(task.startDate);
+      final taskDate = parseJalaliDate(task.dueDate);
 
       return taskDate.year == widget.date.year &&
           taskDate.month == widget.date.month &&
           taskDate.day == widget.date.day;
     }).toList();
-  }
-
-  void toggleTask(int index) {
-    setState(() {
-      selectedTasks[index] = selectedTasks[index].copyWith(
-        isDone: !selectedTasks[index].isDone,
-      );
-    });
   }
 
   @override
@@ -221,9 +222,7 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
                         final task = selectedTasks[index];
 
                         return GestureDetector(
-                          onTap: () {
-                            toggleTask(index);
-                          },
+                          onTap: () {},
 
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 250),
@@ -233,14 +232,14 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
                             padding: const EdgeInsets.all(18),
 
                             decoration: BoxDecoration(
-                              color: task.isDone
+                              color: task.status.id == 4
                                   ? const Color(0xffDCFCE7)
                                   : Colors.white,
 
                               borderRadius: BorderRadius.circular(25),
 
                               border: Border.all(
-                                color: task.isDone
+                                color: task.status.id == 4
                                     ? Colors.green.withOpacity(.4)
                                     : const Color(0xffEDE9FE),
                               ),
@@ -260,26 +259,47 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
                               children: [
                                 Row(
                                   children: [
-                                    Container(
-                                      width: 45,
-                                      height: 45,
+                                    GestureDetector(
+                                      onTap: () async {
+                                        final newStatus = task.status.id == 4
+                                            ? 1
+                                            : 4;
 
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
+                                        final updatedTask = await repository
+                                            .changeTaskStatus(
+                                              task.id,
+                                              newStatus,
+                                            );
 
-                                        color: task.isDone
-                                            ? Colors.green
-                                            : const Color(0xffEDE9FE),
-                                      ),
+                                        setState(() {
+                                          selectedTasks[index] = updatedTask;
+                                        });
 
-                                      child: Icon(
-                                        task.isDone
-                                            ? Icons.check_rounded
-                                            : Icons.circle_outlined,
+                                        widget.onTaskUpdated(updatedTask);
 
-                                        color: task.isDone
-                                            ? Colors.white
-                                            : const Color(0xff8B5CF6),
+                                        widget.onTaskUpdated(updatedTask);
+                                      },
+                                      child: Container(
+                                        width: 45,
+                                        height: 45,
+
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+
+                                          color: task.status.id == 4
+                                              ? Colors.green
+                                              : const Color(0xffEDE9FE),
+                                        ),
+
+                                        child: Icon(
+                                          task.status.id == 4
+                                              ? Icons.check_rounded
+                                              : Icons.circle_outlined,
+
+                                          color: task.status.id == 4
+                                              ? Colors.white
+                                              : const Color(0xff8B5CF6),
+                                        ),
                                       ),
                                     ),
 
@@ -299,7 +319,7 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
 
                                               fontWeight: FontWeight.bold,
 
-                                              decoration: task.isDone
+                                              decoration: task.status.id == 4
                                                   ? TextDecoration.lineThrough
                                                   : null,
                                             ),
@@ -308,7 +328,7 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
                                           const SizedBox(height: 5),
 
                                           Text(
-                                            task.assignment,
+                                            task.teamMember.name,
 
                                             style: TextStyle(
                                               color: Colors.grey.shade600,
@@ -319,11 +339,11 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
                                     ),
 
                                     Icon(
-                                      task.isDone
+                                      task.status.id == 4
                                           ? Icons.done_all
                                           : Icons.pending_actions,
 
-                                      color: task.isDone
+                                      color: task.status.id == 4
                                           ? Colors.green
                                           : Colors.orange,
                                     ),
@@ -357,29 +377,7 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
                                       const SizedBox(width: 8),
 
                                       Text(
-                                        "${task.startDate.year}/${task.startDate.month}/${task.startDate.day}",
-
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-
-                                      const Spacer(),
-
-                                      const Icon(
-                                        Icons.access_time_rounded,
-
-                                        size: 18,
-
-                                        color: Color(0xff8B5CF6),
-                                      ),
-
-                                      const SizedBox(width: 6),
-
-                                      Text(
-                                        "${task.startDate.hour}:${task.startDate.minute.toString().padLeft(2, '0')}",
-
+                                        task.dueDate,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13,
@@ -452,5 +450,17 @@ class _TaskBottomSheetState extends State<TaskBottomSheet> {
     ];
 
     return months[month - 1];
+  }
+
+  Jalali parseJalaliDate(String date) {
+    final datePart = date.split(" ")[0];
+
+    final parts = datePart.split("/");
+
+    return Jalali(
+      int.parse(parts[0]),
+      int.parse(parts[1]),
+      int.parse(parts[2]),
+    );
   }
 }
