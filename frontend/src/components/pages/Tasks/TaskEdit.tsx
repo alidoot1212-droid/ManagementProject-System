@@ -18,11 +18,12 @@ import {
   Typography
 } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
-import { convertToRaw, EditorState } from 'draft-js'
+import { ContentState, EditorState } from 'draft-js'
 
 import EditorControlled from '@/components/elements/editor'
 import Breadcrumb from '@/components/Breadcrumb'
 import { useGetTask, useUpdateTask } from '@/hooks/admin/tasks/useTasks'
+import { useTaskUpsertData } from '@/hooks/admin/upsert-data/useUpsertData'
 
 type FormValues = {
   work_block_id: number | null
@@ -35,47 +36,6 @@ type FormValues = {
 }
 
 export default function TaskEdit() {
-  const priorities = [
-    {
-      id: 1,
-      title: 'کم'
-    },
-    {
-      id: 2,
-      title: 'متوسط'
-    },
-    {
-      id: 3,
-      title: 'زیاد'
-    }
-  ]
-
-  const blocks = [
-    {
-      id: 1,
-      title: 'بلوک فرانت'
-    },
-    {
-      id: 2,
-      title: 'بلوک بک'
-    }
-  ]
-
-  const statuses = [
-    {
-      id: 1,
-      title: 'در انتظار'
-    },
-    {
-      id: 2,
-      title: 'در حال انجام'
-    },
-    {
-      id: 3,
-      title: 'تکمیل شده'
-    }
-  ]
-
   const {
     control,
     handleSubmit,
@@ -94,36 +54,66 @@ export default function TaskEdit() {
   })
 
   const router = useRouter()
-  const { id } = useParams()
+  const { taskId, jobId } = useParams()
 
-  const { data: task, isLoading } = useGetTask(Number(id))
+  const { data: task, isLoading } = useGetTask(Number(taskId))
   const { mutateAsync, isPending } = useUpdateTask()
+  const { workBlocks: blocks, priorities, statuses } = useTaskUpsertData()
 
   useEffect(() => {
     if (!task) return
 
+    let descriptionState: EditorState
+
+    try {
+      const raw = JSON.parse(task.description)
+
+      let plainText = ''
+      let current = raw
+
+      while (current?.blocks) {
+        plainText = current.blocks.map((b: any) => b.text).join('\n')
+
+        try {
+          current = JSON.parse(plainText)
+        } catch {
+          break
+        }
+      }
+
+      descriptionState = EditorState.createWithContent(ContentState.createFromText(plainText))
+    } catch {
+      descriptionState = EditorState.createWithContent(ContentState.createFromText(task.description ?? ''))
+    }
+
     reset({
-      work_block_id: task.block_id,
+      work_block_id: task.work_block?.id ?? null,
       name: task.name,
       weight: task.weight,
       value: task.value,
-      priority_id: task.priority_id,
-      status_id: task.status_id,
-      description: task.description
+      priority_id: task.priority?.id ?? null,
+      status_id: task.status?.id ?? null,
+      description: descriptionState
     })
   }, [reset, task])
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
-      ...data,
-      description: JSON.stringify(convertToRaw(data.description.getCurrentContent()))
+      work_block_id: data.work_block_id,
+      name: data.name,
+      weight: data.weight,
+      value: data.value,
+      priority_id: data.priority_id,
+      status_id: data.status_id,
+      description: data.description.getCurrentContent().getPlainText()
     }
 
     await mutateAsync({
-      id: Number(id),
+      id: Number(taskId),
       payload
     })
-    router.push('/admin/tasks')
+
+    router.push(`/admin/job/${jobId}/tasks`)
   }
 
   const items = [
@@ -176,10 +166,17 @@ export default function TaskEdit() {
                   control={control}
                   rules={{ required: 'انتخاب بلوک کار الزامی است' }}
                   render={({ field }) => (
-                    <TextField {...field} select label='بلوک کار' fullWidth value={field.value ?? ''}>
+                    <TextField
+                      {...field}
+                      select
+                      label='بلوک کار'
+                      fullWidth
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                    >
                       {blocks.map(block => (
                         <MenuItem key={block.id} value={block.id}>
-                          {block.title}
+                          {block.name}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -197,7 +194,7 @@ export default function TaskEdit() {
                   render={({ field }) => (
                     <Slider
                       value={field.value}
-                      onChange={(_, value) => field.onChange(value)}
+                      onChange={(_, value) => field.onChange(Array.isArray(value) ? value[0] : value)}
                       valueLabelDisplay='auto'
                       marks
                       min={1}
@@ -218,7 +215,7 @@ export default function TaskEdit() {
                   render={({ field }) => (
                     <Slider
                       value={field.value}
-                      onChange={(_, value) => field.onChange(value)}
+                      onChange={(_, value) => field.onChange(Array.isArray(value) ? value[0] : value)}
                       valueLabelDisplay='auto'
                       marks
                       min={1}
@@ -235,10 +232,18 @@ export default function TaskEdit() {
                   control={control}
                   rules={{ required: 'انتخاب اولویت الزامی است' }}
                   render={({ field }) => (
-                    <TextField {...field} select label='اولویت' fullWidth value={field.value ?? ''}>
+                    <TextField
+                      {...field}
+                      select
+                      label='اولویت'
+                      fullWidth
+                      error={!!errors.priority_id}
+                      helperText={errors.priority_id?.message}
+                      value={field.value ?? ''}
+                    >
                       {priorities.map(priority => (
                         <MenuItem key={priority.id} value={priority.id}>
-                          {priority.title}
+                          {priority.name}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -254,7 +259,7 @@ export default function TaskEdit() {
                     <TextField {...field} select label='وضعیت' fullWidth value={field.value ?? ''}>
                       {statuses.map(status => (
                         <MenuItem key={status.id} value={status.id}>
-                          {status.title}
+                          {status.name}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -271,7 +276,13 @@ export default function TaskEdit() {
               </Grid>
 
               <Grid item md={12} display='flex' justifyContent='space-between'>
-                <Link component='button' underline='hover' onClick={() => router.back()} color='error'>
+                <Link
+                  component='button'
+                  type='button'
+                  underline='hover'
+                  onClick={() => router.push(`/admin/job/${jobId}/tasks`)}
+                  color='error'
+                >
                   بازگشت
                 </Link>
                 <Button type='submit' variant='contained' color='success' disabled={isPending}>

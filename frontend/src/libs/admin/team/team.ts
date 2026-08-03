@@ -1,4 +1,3 @@
-import data from '@/data/searchData'
 import { api } from '@/libs/api'
 
 export interface CreateTeamPayload {

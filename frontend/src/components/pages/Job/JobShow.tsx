@@ -8,23 +8,32 @@ import { useGetJob } from '@/hooks/admin/job/useJob'
 import Breadcrumb from '@/components/Breadcrumb'
 
 export default function JobShow() {
-  const { id } = useParams()
-  const { data: job, isLoading } = useGetJob(Number(id))
+  const { jobId } = useParams()
 
+  console.log('PARAM:', jobId)
   const router = useRouter()
+
+  const { data, isLoading } = useGetJob(Number(jobId))
+
+  console.log('PAGE DATA:', data)
+
+  // const job = data?.data
+
+  // console.log(job, 'dataaaa')
 
   if (isLoading) return <>درحال بارگزاری...</>
 
-  if (!job) return <>صفحه مورد نظر یافت نشد!</>
+  if (!data) return <>صفحه مورد نظر یافت نشد!</>
 
   const items = [{ title: 'داشبورد', to: '/admin' }, { title: 'لیست کار ها', to: '/admin/job' }, { title: 'نمایش کار' }]
 
   return (
     <>
       <Breadcrumb items={items} />
+
       <Card>
         <CardHeader
-          title='مشاهده بلوک کار'
+          title='مشاهده کار'
           titleTypographyProps={{
             variant: 'h4',
             align: 'center'
@@ -38,7 +47,7 @@ export default function JobShow() {
             <Grid item md={12} xs={12}>
               <TextField
                 label='عنوان'
-                value={job.name}
+                value={data.data.name ?? ''}
                 fullWidth
                 InputProps={{
                   readOnly: true
@@ -49,7 +58,7 @@ export default function JobShow() {
             <Grid item md={6} xs={12}>
               <TextField
                 label='زمان شروع'
-                value={job.start_time}
+                value={data.data.start_time ?? ''}
                 fullWidth
                 InputProps={{
                   readOnly: true
@@ -60,7 +69,7 @@ export default function JobShow() {
             <Grid item md={6} xs={12}>
               <TextField
                 label='زمان پایان'
-                value={job.end_time}
+                value={data.data.end_time ?? ''}
                 fullWidth
                 InputProps={{
                   readOnly: true
@@ -70,8 +79,8 @@ export default function JobShow() {
 
             <Grid item md={6} xs={12}>
               <TextField
-                label='تیم'
-                value={job.team?.name ?? ''}
+                label='شناسه تیم'
+                value={data.data.team_id ?? ''}
                 fullWidth
                 InputProps={{
                   readOnly: true
@@ -82,7 +91,7 @@ export default function JobShow() {
             <Grid item md={6} xs={12}>
               <TextField
                 label='وضعیت'
-                value={job.status?.title ?? ''}
+                value={data.data.status?.name ?? ''}
                 fullWidth
                 InputProps={{
                   readOnly: true
@@ -90,19 +99,24 @@ export default function JobShow() {
               />
             </Grid>
 
-            <Grid item md={12} xs={12}>
+            <Grid item xs={12}>
               <Card variant='outlined'>
                 <CardContent>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: job.description
+                  <TextField
+                    label='توضیحات'
+                    value={data.data.description ?? ''}
+                    multiline
+                    minRows={5}
+                    fullWidth
+                    InputProps={{
+                      readOnly: true
                     }}
                   />
                 </CardContent>
               </Card>
             </Grid>
 
-            <Grid item md={12} xs={12}>
+            <Grid item xs={12}>
               <Link component='button' underline='hover' onClick={() => router.back()} color='error'>
                 بازگشت
               </Link>

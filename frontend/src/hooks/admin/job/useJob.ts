@@ -29,16 +29,16 @@ export function useCreateJob() {
 }
 
 export function useGetJob(id: number) {
-  const { data, isLoading, error } = useQuery({
+  const query = useQuery({
     queryKey: ['work-blocks', id],
     queryFn: () => getJob(id),
     enabled: !!id
   })
 
   return {
-    data,
-    isLoading,
-    error
+    data: query.data,
+    isLoading: query.isLoading,
+    error: query.error
   }
 }
 

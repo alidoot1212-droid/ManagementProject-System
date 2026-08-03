@@ -12,27 +12,12 @@ import CustomTable from '@/components/CustomTable'
 export default function JobTable() {
   const router = useRouter()
 
-  const statusConfig: Record<string, { label: string; color: any }> = {
-    active: {
-      label: 'فعال',
-      color: 'success'
-    },
-    inactive: {
-      label: 'غیرفعال',
-      color: 'error'
-    },
-    pending: {
-      label: 'در انتظار',
-      color: 'warning'
-    },
-    completed: {
-      label: 'تکمیل شده',
-      color: 'success'
-    },
-    cancelled: {
-      label: 'لغو شده',
-      color: 'error'
-    }
+  const statusColors: Record<number, any> = {
+    1: 'primary',
+    2: 'warning',
+    3: 'success',
+    4: 'error',
+    5: 'info'
   }
 
   const items = [{ title: 'داشبورد', to: '/admin' }, { title: 'لیست کار ها' }]
@@ -51,16 +36,11 @@ export default function JobTable() {
       (value: any[]) => {
         const status = value[0]
 
-        const config = statusConfig[status] || {
-          label: status ?? '-',
-          color: 'default'
-        }
-
-        return <Chip label={config.label} color={config.color} size='small' />
+        return <Chip label={status?.name ?? '-'} color={statusColors[status?.id] ?? 'default'} size='small' />
       },
       (_value: any, _index: number, row: any) => (
         <Tooltip title='وظایف' arrow>
-          <IconButton color='info' onClick={() => router.push(`/admin/work-blocks/${row.id}/info`)}>
+          <IconButton color='info' onClick={() => router.push(`/admin/job/${row.id}/tasks`)}>
             <InfoOutlinedIcon />
           </IconButton>
         </Tooltip>
@@ -90,7 +70,7 @@ export default function JobTable() {
           status: true
         }}
         queryKey='work-blocks'
-        baseUrl='/work-blocks/'
+        baseUrl='/work-blocks'
         textBtn='ایجاد کار جدید'
         btnShow={true}
         dataStruct={dataStruct}
@@ -111,7 +91,7 @@ export default function JobTable() {
           },
 
           onInfo: (row: any) => {
-            router.push(`/admin/job/${row.id}/info`)
+            router.push(`/admin/job/${row.id}/tasks`)
           }
         }}
       />

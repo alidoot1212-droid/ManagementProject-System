@@ -14,9 +14,10 @@ import { MobileTimePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { faIR } from '@mui/x-date-pickers/locales'
-import { EditorState, convertFromRaw, convertToRaw } from 'draft-js'
+import { EditorState, ContentState } from 'draft-js'
 import dayjs from 'dayjs'
 
+import { useTaskUpsertData } from '@/hooks/admin/upsert-data/useUpsertData'
 import EditorControlled from '@/components/elements/editor'
 import { useGetJob, useUpdateJob } from '@/hooks/admin/job/useJob'
 import Breadcrumb from '@/components/Breadcrumb'
@@ -31,36 +32,6 @@ type FormValues = {
 }
 
 export default function JobEdit() {
-  const teams = [
-    {
-      id: 1,
-      name: 'Frontend'
-    },
-    {
-      id: 2,
-      name: 'Backend'
-    },
-    {
-      id: 3,
-      name: 'Mobile'
-    }
-  ]
-
-  const statuses = [
-    {
-      id: 1,
-      title: 'در انتظار'
-    },
-    {
-      id: 2,
-      title: 'در حال انجام'
-    },
-    {
-      id: 3,
-      title: 'تکمیل شده'
-    }
-  ]
-
   const {
     control,
     handleSubmit,
@@ -79,9 +50,12 @@ export default function JobEdit() {
 
   const router = useRouter()
 
-  const { id } = useParams()
+  const { jobId } = useParams()
+  const { teams, statuses } = useTaskUpsertData()
 
-  const { data: job, isLoading } = useGetJob(Number(id))
+  const { data, isLoading } = useGetJob(Number(jobId))
+
+  const job = data?.data
 
   const { mutateAsync, isPending } = useUpdateJob()
 
@@ -90,27 +64,30 @@ export default function JobEdit() {
 
     reset({
       name: job.name,
-      start_time: dayjs(job.start_time),
-      end_time: dayjs(job.end_time),
+      start_time: job.start_time ? dayjs(`2026-01-01 ${job.start_time}`) : null,
+      end_time: job.end_time ? dayjs(`2026-01-01 ${job.end_time}`) : null,
       team_id: job.team_id,
-      status_id: job.status_id,
+      status_id: job.status?.id ?? null,
       description: job.description
-        ? EditorState.createWithContent(convertFromRaw(JSON.parse(job.description)))
+        ? EditorState.createWithContent(ContentState.createFromText(job.description))
         : EditorState.createEmpty()
     })
   }, [job, reset])
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
-      ...data,
+      name: data.name,
+      team_id: data.team_id,
+      status_id: data.status_id,
       start_time: data.start_time?.format('HH:mm'),
       end_time: data.end_time?.format('HH:mm'),
-      description: JSON.stringify(convertToRaw(data.description.getCurrentContent()))
+      description: data.description.getCurrentContent().getPlainText()
     }
 
+    console.log(payload)
     await mutateAsync({
-      id: Number(id),
-      payload
+      id: Number(jobId),
+      ...payload
     })
 
     router.push('/admin/job')
@@ -228,7 +205,15 @@ export default function JobEdit() {
                     control={control}
                     rules={{ required: 'انتخاب تیم الزامی است' }}
                     render={({ field }) => (
-                      <TextField {...field} select label='تیم' fullWidth value={field.value ?? ''}>
+                      <TextField
+                        {...field}
+                        select
+                        label='تیم'
+                        fullWidth
+                        value={field.value ?? ''}
+                        error={!!errors.team_id}
+                        helperText={errors.team_id?.message}
+                      >
                         {teams.map(team => (
                           <MenuItem key={team.id} value={team.id}>
                             {team.name}
@@ -247,7 +232,7 @@ export default function JobEdit() {
                       <TextField {...field} select label='وضعیت' fullWidth value={field.value ?? ''}>
                         {statuses.map(status => (
                           <MenuItem key={status.id} value={status.id}>
-                            {status.title}
+                            {status.name}
                           </MenuItem>
                         ))}
                       </TextField>
@@ -264,7 +249,7 @@ export default function JobEdit() {
                 </Grid>
 
                 <Grid item md={12} display='flex' justifyContent='space-between'>
-                  <Link component='button' underline='hover' onClick={() => router.back()} color='error'>
+                  <Link component='button' type='button' underline='hover' onClick={() => router.back()} color='error'>
                     بازگشت
                   </Link>
                   <Button type='submit' variant='contained' color='success' disabled={isPending}>

@@ -13,9 +13,12 @@ type Props = {
   open: boolean
   onClose: () => void
   onSubmit: () => void
+  row?: any
 }
 
-const AskingModal = ({ open, onClose, onSubmit }: Props) => {
+const AskingModal = ({ open, row, onClose, onSubmit }: Props) => {
+  console.log(row)
+
   return (
     <Fragment>
       <Dialog

@@ -10,32 +10,9 @@ import { useGetTask } from '@/hooks/admin/tasks/useTasks'
 export default function TaskShow() {
   const router = useRouter()
 
-  const task = {
-    name: 'پیاده سازی صفحه وظایف',
-    block: {
-      title: 'بلوک فرانت'
-    },
-    weight: 4,
-    value: 5,
-    priority: {
-      title: 'زیاد'
-    },
-    status: {
-      title: 'در حال انجام'
-    },
-    description: `
-      <p>این یک توضیح تست برای وظیفه است.</p>
-      <ul>
-        <li>ساخت Create</li>
-        <li>ساخت Show</li>
-        <li>ساخت Edit</li>
-      </ul>
-    `
-  }
+  const { taskId } = useParams()
 
-  const { id } = useParams()
-
-  const { data: task, isLoading } = useGetTask(Number(id))
+  const { data: task, isLoading } = useGetTask(Number(taskId))
 
   if (isLoading) return <>در حال بارگذاری...</>
 
@@ -69,7 +46,7 @@ export default function TaskShow() {
             </Grid>
 
             <Grid item md={6} xs={12}>
-              <TextField label='بلوک کار' value={task.block.title} fullWidth InputProps={{ readOnly: true }} />
+              <TextField label='بلوک کار' value={task.work_block.name} fullWidth InputProps={{ readOnly: true }} />
             </Grid>
 
             <Grid item md={3} xs={12}>
@@ -81,11 +58,11 @@ export default function TaskShow() {
             </Grid>
 
             <Grid item md={6} xs={12}>
-              <TextField label='اولویت' value={task.priority.title} fullWidth InputProps={{ readOnly: true }} />
+              <TextField label='اولویت' value={task.priority.name} fullWidth InputProps={{ readOnly: true }} />
             </Grid>
 
             <Grid item md={6} xs={12}>
-              <TextField label='وضعیت' value={task.status.title} fullWidth InputProps={{ readOnly: true }} />
+              <TextField label='وضعیت' value={task.status.name} fullWidth InputProps={{ readOnly: true }} />
             </Grid>
 
             <Grid item md={12} xs={12}>

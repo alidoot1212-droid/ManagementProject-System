@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 
 import {
   Button,
@@ -16,11 +16,12 @@ import {
   Typography
 } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
-import { convertToRaw, EditorState } from 'draft-js'
+import { EditorState } from 'draft-js'
 
 import EditorControlled from '@/components/elements/editor'
 import Breadcrumb from '@/components/Breadcrumb'
 import { useCreateTask } from '@/hooks/admin/tasks/useTasks'
+import { useTaskUpsertData } from '@/hooks/admin/upsert-data/useUpsertData'
 
 type FormValues = {
   work_block_id: number | null
@@ -33,47 +34,6 @@ type FormValues = {
 }
 
 export default function TaskCreate() {
-  const priorities = [
-    {
-      id: 1,
-      title: 'کم'
-    },
-    {
-      id: 2,
-      title: 'متوسط'
-    },
-    {
-      id: 3,
-      title: 'زیاد'
-    }
-  ]
-
-  const blocks = [
-    {
-      id: 1,
-      title: 'بلوک فرانت'
-    },
-    {
-      id: 2,
-      title: 'بلوک بک'
-    }
-  ]
-
-  const statuses = [
-    {
-      id: 1,
-      title: 'در انتظار'
-    },
-    {
-      id: 2,
-      title: 'در حال انجام'
-    },
-    {
-      id: 3,
-      title: 'تکمیل شده'
-    }
-  ]
-
   const {
     control,
     handleSubmit,
@@ -91,17 +51,25 @@ export default function TaskCreate() {
   })
 
   const router = useRouter()
+  const { jobId } = useParams()
+
   const { mutateAsync, isPending } = useCreateTask()
+  const { workBlocks: blocks, priorities, statuses } = useTaskUpsertData()
 
   const onSubmit = async (data: FormValues) => {
     const payload = {
-      ...data,
-      description: JSON.stringify(convertToRaw(data.description.getCurrentContent()))
+      work_block_id: data.work_block_id,
+      name: data.name,
+      weight: data.weight,
+      value: data.value,
+      priority_id: data.priority_id,
+      status_id: data.status_id,
+      description: data.description.getCurrentContent().getPlainText()
     }
 
     await mutateAsync(payload)
 
-    router.push('/admin/tasks')
+    router.push(`/admin/job/${jobId}/tasks`)
   }
 
   const items = [
@@ -156,12 +124,11 @@ export default function TaskCreate() {
                       label='بلوک کار'
                       fullWidth
                       value={field.value ?? ''}
-                      error={!!errors.work_block_id}
-                      helperText={errors.work_block_id?.message}
+                      onChange={e => field.onChange(Number(e.target.value))}
                     >
                       {blocks.map(block => (
                         <MenuItem key={block.id} value={block.id}>
-                          {block.title}
+                          {block.name}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -179,7 +146,7 @@ export default function TaskCreate() {
                   render={({ field }) => (
                     <Slider
                       value={field.value}
-                      onChange={(_, value) => field.onChange(value)}
+                      onChange={(_, value) => field.onChange(Array.isArray(value) ? value[0] : value)}
                       valueLabelDisplay='auto'
                       marks
                       min={1}
@@ -200,7 +167,7 @@ export default function TaskCreate() {
                   render={({ field }) => (
                     <Slider
                       value={field.value}
-                      onChange={(_, value) => field.onChange(value)}
+                      onChange={(_, value) => field.onChange(Array.isArray(value) ? value[0] : value)}
                       valueLabelDisplay='auto'
                       marks
                       min={1}
@@ -228,7 +195,7 @@ export default function TaskCreate() {
                     >
                       {priorities.map(priority => (
                         <MenuItem key={priority.id} value={priority.id}>
-                          {priority.title}
+                          {priority.name}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -244,7 +211,7 @@ export default function TaskCreate() {
                     <TextField {...field} select label='وضعیت' fullWidth value={field.value ?? ''}>
                       {statuses.map(status => (
                         <MenuItem key={status.id} value={status.id}>
-                          {status.title}
+                          {status.name}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -261,7 +228,12 @@ export default function TaskCreate() {
               </Grid>
 
               <Grid item md={12} display='flex' justifyContent='space-between'>
-                <Link component='button' underline='hover' onClick={() => router.back()} color='error'>
+                <Link
+                  component='button'
+                  underline='hover'
+                  onClick={() => router.push(`/admin/job/${jobId}/tasks`)}
+                  color='error'
+                >
                   بازگشت
                 </Link>
                 <Button type='submit' variant='contained' color='success' disabled={isPending}>
