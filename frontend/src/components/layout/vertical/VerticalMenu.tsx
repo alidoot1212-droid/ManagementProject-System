@@ -1,10 +1,5 @@
 'use client'
 
-// MUI Imports
-import { title } from 'process'
-
-import path from 'path'
-
 import { useTheme } from '@mui/material/styles'
 
 // Third-party Imports
@@ -53,16 +48,6 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 
   const navAdmin = [
-    // {
-    //   title: 'جلسات',
-    //   icon: '/images/icons/menu/education.png',
-    //   children: [
-    //     {
-    //       title: 'فهرست جلسات',
-    //       path: '/admin/Meetings'
-    //     }
-    //   ]
-    // },
     {
       title: 'تیم ها',
       icon: '/images/icons/menu/management.png',
@@ -70,6 +55,16 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
         {
           title: 'فهرست',
           path: '/admin/team'
+        }
+      ]
+    },
+    {
+      title: 'لیست کار ها',
+      icon: '/images/icons/menu/application.png',
+      children: [
+        {
+          title: 'بلوک کار',
+          path: '/admin/job'
         }
       ]
     }

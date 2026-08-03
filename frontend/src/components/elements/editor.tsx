@@ -13,7 +13,12 @@ type Props = {
 const EditorControlled = ({ value, onChange, disabled }: Props) => {
   return (
     <EditorWrapper>
-      <ReactDraftWysiwyg editorState={value} onEditorStateChange={onChange} readOnly={disabled} />
+      <ReactDraftWysiwyg
+        editorState={value}
+        onEditorStateChange={onChange}
+        readOnly={disabled}
+        placeholder='توضیحات مورد نظر را وارد کنید...'
+      />
     </EditorWrapper>
   )
 }
