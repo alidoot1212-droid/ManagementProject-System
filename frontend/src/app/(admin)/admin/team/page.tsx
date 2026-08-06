@@ -1,4 +1,3 @@
-
 import TeamTable from '@/components/pages/admin/team/TeamTable'
 
 export const metadata = {

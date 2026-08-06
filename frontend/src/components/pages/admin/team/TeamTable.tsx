@@ -1,19 +1,15 @@
-// export default function TeamTable (){
-//     return <div>Team</div>
-// }
-
 'use client'
 
 import { useState } from 'react'
 
-import { Avatar, Box, Button, Chip, Stack } from '@mui/material'
+import { Button } from '@mui/material'
 
 import { BiPlus } from 'react-icons/bi'
 
 import CustomTable from '@/components/CustomTable'
 import Breadcrumb from '@/components/Breadcrumb'
 import CreateTeam from './CreateTeam'
-import CustomChip from '@/@core/components/mui/Chip'
+
 import ShowTeam from './ShowTeam'
 import UpdateTeam from './UpdateTeam'
 

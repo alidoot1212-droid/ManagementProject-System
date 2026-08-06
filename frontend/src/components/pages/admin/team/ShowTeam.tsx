@@ -5,7 +5,7 @@ import { forwardRef } from 'react'
 
 import Fade from '@mui/material/Fade'
 
-import { Box, Button, Chip, Dialog, DialogActions, Grid, Typography, Stack, CircularProgress } from '@mui/material'
+import { Box, Button, Chip, Dialog, DialogActions, Grid, Typography, CircularProgress } from '@mui/material'
 
 import DialogContent from '@mui/material/DialogContent'
 

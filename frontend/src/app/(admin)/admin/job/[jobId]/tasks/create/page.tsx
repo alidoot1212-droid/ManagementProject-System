@@ -1,4 +1,4 @@
-import TaskCreate from '@/components/pages/Tasks/TaskCreate'
+import TaskCreate from '@/components/pages/admin/Tasks/TaskCreate'
 
 export default function TaskCreatePage() {
   return <TaskCreate />
